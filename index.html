@@ -1,71 +1,258 @@
-const content = document.getElementById("content").value.trim();
-    const note = document.getElementById("note").value.trim();
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDTG - Giao Dịch Trung Gian</title>
 
-    if (!buyer || !seller || !money || !content) {
-
-        alert("Vui lòng nhập đầy đủ người mua, người bán, số tiền và nội dung giao dịch.");
-
-        return;
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
     }
 
-    const code =
-        "GD" +
-        Math.floor(100000 + Math.random() * 900000);
+    body {
+      background: #f4f6f8;
+      color: #222;
+    }
 
-    const transaction = {
+    header {
+      background: #111827;
+      color: white;
+      padding: 22px;
+      text-align: center;
+    }
 
-        code: code,
+    header h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+    }
 
+    header p {
+      color: #cbd5e1;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    }
+
+    h2 {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .result {
+      margin-top: 18px;
+      padding: 15px;
+      background: #eff6ff;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .rule {
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
+      line-height: 1.5;
+    }
+
+    .rule:last-child {
+      border-bottom: none;
+    }
+
+    footer {
+      text-align: center;
+      color: #6b7280;
+      padding: 25px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>GDTG</h1>
+    <p>Giao Dịch Trung Gian</p>
+  </header>
+
+  <div class="container">
+
+    <div class="card">
+      <h2>📝 Tạo giao dịch</h2>
+
+      <label>Bên mua</label>
+      <input id="buyer" placeholder="Nhập tên bên mua">
+
+      <label>Bên bán</label>
+      <input id="seller" placeholder="Nhập tên bên bán">
+
+      <label>Số tiền giao dịch</label>
+      <input id="money" type="number" placeholder="Nhập số tiền">
+
+      <label>Nội dung giao dịch</label>
+      <textarea id="content" placeholder="Ví dụ: Mua acc game..."></textarea>
+
+      <button onclick="createTransaction()">
+        Tạo giao dịch
+      </button>
+
+      <div class="result" id="createResult"></div>
+    </div>
+
+
+    <div class="card">
+      <h2>🔎 Tra cứu giao dịch</h2>
+
+      <label>Mã giao dịch</label>
+      <input id="lookupCode" placeholder="Ví dụ: GD123456">
+
+      <button onclick="lookupTransaction()">
+        Tra cứu
+      </button>
+
+      <div class="result" id="lookupResult"></div>
+    </div>
+
+
+    <div class="card">
+      <h2>📜 Quy tắc giao dịch</h2>
+
+      <div class="rule">
+        <b>1.</b> Trung gian được phép hoàn tiền hoặc chuyển tiền khi một bên không hợp tác sau 24h.
+      </div>
+
+      <div class="rule">
+        <b>2.</b> Không được tự ý thêm người thứ 4 vào nhóm khi đang giao dịch.
+      </div>
+
+      <div class="rule">
+        <b>3.</b> Khi đang giao dịch bị kích ra hoặc trung gian bị kích, lập tức liên hệ riêng với trung gian.
+      </div>
+
+      <div class="rule">
+        <b>4.</b> Mua bán gì phải ghi rõ nội dung cần giao dịch. Không ghi nội dung hoặc không có box sẽ không giải quyết.
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    © 2026 GDTG - Giao Dịch Trung Gian
+  </footer>
+
+
+  <script>
+    function createTransaction() {
+
+      const buyer = document.getElementById("buyer").value.trim();
+      const seller = document.getElementById("seller").value.trim();
+      const money = document.getElementById("money").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (!buyer || !seller || !money || !content) {
+        alert("Vui lòng nhập đầy đủ thông tin.");
+        return;
+      }
+
+      const code = "GD" + Math.floor(100000 + Math.random() * 900000);
+
+      const transaction = {
         buyer: buyer,
-
         seller: seller,
-
-        money: Number(money),
-
+        money: money,
         content: content,
+        status: "Đang chờ xử lý"
+      };
 
-        note: note,
+      localStorage.setItem(code, JSON.stringify(transaction));
 
-        status: "Đang chờ xử lý",
+      const result = document.getElementById("createResult");
 
-        createdAt: new Date().toLocaleString("vi-VN")
-
-    };
-
-    localStorage.setItem(
-        "gdtg_" + code,
-        JSON.stringify(transaction)
-    );
-
-    document.getElementById("newCode").innerText = code;
-
-    document.getElementById("success").style.display = "block";
-
-    document.getElementById("lookup").value = code;
-
-    window.scrollTo({
-        top: document.getElementById("success").offsetTop,
-        behavior: "smooth"
-    });
-}
-
-
-function lookupTransaction() {
-
-    const code =
-        document.getElementById("lookup").value
-        .trim()
-        .toUpperCase();
-
-    const result =
-        document.getElementById("lookupResult");
-
-    if (!code) {
-
-        alert("Nhập mã giao dịch trước.");
-
-        return;
+      result.style.display = "block";
+      result.innerHTML =
+        "<b>Tạo giao dịch thành công!</b><br><br>" +
+        "Mã giao dịch: <strong>" + code + "</strong><br>" +
+        "Hãy lưu mã này để tra cứu.";
     }
 
-    const data =
-        localStor
+
+    function lookupTransaction() {
+
+      const code = document.getElementById("lookupCode").value.trim();
+
+      const result = document.getElementById("lookupResult");
+
+      if (!code) {
+        alert("Vui lòng nhập mã giao dịch.");
+        return;
+      }
+
+      const data = localStorage.getItem(code);
+
+      result.style.display = "block";
+
+      if (!data) {
+        result.innerHTML = "❌ Không tìm thấy giao dịch.";
+        return;
+      }
+
+      const transaction = JSON.parse(data);
+
+      result.innerHTML =
+        "<b>Thông tin giao dịch</b><br><br>" +
+        "Bên mua: " + transaction.buyer + "<br>" +
+        "Bên bán: " + transaction.seller + "<br>" +
+        "Số tiền: " + transaction.money + "<br>" +
+        "Nội dung: " + transaction.content + "<br>" +
+        "Trạng thái: <strong>" + transaction.status + "</strong>";
+    }
+  </script>
+
+</body>
+</html>
