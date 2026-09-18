@@ -1,0 +1,67 @@
+document.getElementById("lookup").value =
+    code;
+}
+
+
+function lookupTransaction() {
+
+  const code =
+    document
+      .getElementById("lookup")
+      .value
+      .trim()
+      .toUpperCase();
+
+  const found =
+    document.getElementById("found");
+
+  const data =
+    localStorage.getItem(
+      "gdtg_" + code
+    );
+
+  found.style.display = "block";
+
+  if (!data) {
+
+    found.innerHTML =
+      "❌ Không tìm thấy mã giao dịch.";
+
+    return;
+  }
+
+  const transaction =
+    JSON.parse(data);
+
+  found.innerHTML =
+
+    "<b>Mã giao dịch:</b> " +
+    transaction.code +
+    "<br>" +
+
+    "<b>Trạng thái:</b> " +
+    transaction.status +
+    "<br>" +
+
+    "<b>Bên mua:</b> " +
+    transaction.buyer +
+    "<br>" +
+
+    "<b>Bên bán:</b> " +
+    transaction.seller +
+    "<br>" +
+
+    "<b>Số tiền:</b> " +
+    Number(transaction.amount)
+      .toLocaleString("vi-VN") +
+    "đ<br>" +
+
+    "<b>Nội dung:</b> " +
+    transaction.content;
+
+}
+
+</script>
+
+</body>
+</html>
